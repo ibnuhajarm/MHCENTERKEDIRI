@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import {
@@ -38,7 +38,7 @@ export default function AdminPanel() {
   const [syncing, setSyncing] = useState(false);
   const [passwords, setPasswords] = useState({ current: "", next: "" });
 
-  const load = async () => {
+  const load = useCallback(async () => {
     try {
       const { data } = await api.get("/admin/config");
       setCfg(data.config);
@@ -52,8 +52,11 @@ export default function AdminPanel() {
         toast.error("Gagal memuat konfigurasi");
       }
     }
-  };
-  useEffect(() => { load(); }, []);
+  }, [logout, nav]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   const save = async () => {
     setBusy(true);
